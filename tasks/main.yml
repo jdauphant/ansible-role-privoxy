@@ -1,0 +1,20 @@
+---
+- name: install privoxy for Debian OS family
+  apt: pkg=privoxy state={{ privoxy_pkg_state }}
+  when: ansible_os_family == 'Debian'
+  tags: ["packages","privoxy"]
+
+- name: install privoxy for RedHat OS family
+  yum: name=privoxy state={{ privoxy_pkg_state }}
+  when: ansible_os_family == 'RedHat'
+  tags: ["packages","privoxy"]
+
+- name: configure privoxy
+  template: src=config.j2 dest={{privoxy_confdir}}/config
+  notify: restart privoxy
+  tags: ["configuration","privoxy"]
+
+- name: ensure privoxy is started/stopped
+  service: name=privoxy state={{ privoxy_service_state }} enabled={{ privoxy_service_enabled }}
+  tags: ["service","privoxy"]
+
